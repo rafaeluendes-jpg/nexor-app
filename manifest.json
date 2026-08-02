@@ -1,0 +1,14 @@
+{
+  "name": "Nexor Gestão",
+  "short_name": "Nexor",
+  "description": "Acompanhe o faturamento da sua loja",
+  "start_url": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0B1F2E",
+  "theme_color": "#0B1F2E",
+  "icons": [
+    {"src":"icone.png","sizes":"192x192","type":"image/png","purpose":"any maskable"},
+    {"src":"icone512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+  ]
+}

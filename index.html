@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nexor Gestão</title>
+<meta name="theme-color" content="#0B1F2E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Nexor Gestão">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icone.png">
+<link rel="icon" href="icone.png">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --fundo:#F4F6F8; --card:#FFFFFF; --deep:#0B1F2E; --deep2:#143349;
+  --acc:#00A08B; --acc-d:#007A69; --acc-soft:#E6F5F2;
+  --ink:#16212B; --ink-2:#4A5A68; --ink-3:#8A98A5;
+  --linha:#E3E9EE; --vg:#0E8A46; --vr:#C94141; --amber:#B8730B;
+  --sh:0 1px 3px rgba(11,31,46,.06),0 4px 16px rgba(11,31,46,.06);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--fundo);color:var(--ink);
+  font-family:Inter,system-ui,-apple-system,sans-serif;font-size:15px;
+  -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,select{font-family:inherit;font-size:16px}
+.esc{max-width:560px;margin:0 auto}
+
+/* ---------- login ---------- */
+.lg{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px;background:linear-gradient(160deg,var(--deep),var(--deep2))}
+.lgLogo{width:76px;height:76px;border-radius:20px;background:#fff;display:flex;
+  align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
+.lgLogo b{font-size:34px;color:var(--acc);font-weight:800}
+.lg h1{margin:0 0 4px;font-size:23px;color:#fff;font-weight:700;letter-spacing:-.02em}
+.lg p{margin:0 0 30px;font-size:13px;color:rgba(255,255,255,.55)}
+.lgCard{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:370px;
+  box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.cp{margin-bottom:14px}
+.cp label{display:block;font-size:11.5px;font-weight:700;color:var(--ink-3);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.05em}
+.cp input{width:100%;border:1.5px solid var(--linha);border-radius:11px;padding:13px 14px;outline:none}
+.cp input:focus{border-color:var(--acc)}
+.btnP{width:100%;background:var(--acc);color:#fff;border-radius:11px;padding:15px;
+  font-size:15px;font-weight:600;margin-top:4px}
+.btnP:active{background:var(--acc-d)}
+.erro{color:var(--vr);font-size:12.5px;margin-top:10px;text-align:center;min-height:16px}
+
+/* ---------- topo ---------- */
+.topo{background:var(--deep);color:#fff;padding:calc(env(safe-area-inset-top) + 16px) 18px 18px}
+.topoIn{max-width:560px;margin:0 auto}
+.tpL{display:flex;align-items:center;gap:11px;margin-bottom:16px}
+.tpAv{width:38px;height:38px;border-radius:11px;background:rgba(255,255,255,.13);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px}
+.tpN b{display:block;font-size:14.5px}
+.tpN span{display:block;font-size:11.5px;color:rgba(255,255,255,.55)}
+.tpSair{margin-left:auto;background:rgba(255,255,255,.1);border-radius:9px;padding:8px 12px;
+  font-size:12px;color:rgba(255,255,255,.8)}
+.lojaSel{width:100%;background:rgba(255,255,255,.1);border:none;border-radius:11px;
+  padding:12px 14px;color:#fff;font-size:14px;-webkit-appearance:none;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat:no-repeat;background-position:right 14px center}
+
+/* ---------- período ---------- */
+.per{display:flex;gap:7px;padding:14px 18px 4px;overflow-x:auto;scrollbar-width:none}
+.per::-webkit-scrollbar{display:none}
+.perB{padding:9px 16px;border-radius:20px;background:#fff;border:1px solid var(--linha);
+  font-size:13px;white-space:nowrap;color:var(--ink-2);font-weight:500}
+.perB.on{background:var(--deep);border-color:var(--deep);color:#fff;font-weight:600}
+
+/* ---------- cartões ---------- */
+.corpo{padding:14px 18px 40px}
+.destaque{background:linear-gradient(135deg,var(--acc),#00806F);border-radius:18px;
+  padding:22px;color:#fff;margin-bottom:12px;box-shadow:0 8px 24px rgba(0,160,139,.25)}
+.destaque span{font-size:12.5px;opacity:.85;font-weight:500}
+.destaque b{display:block;font-size:34px;font-weight:800;margin:5px 0 3px;letter-spacing:-.02em}
+.destaque .var{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.2);
+  border-radius:12px;padding:4px 11px;font-size:12px;font-weight:600;margin-top:6px}
+.grade2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mini{background:#fff;border-radius:14px;padding:15px;box-shadow:var(--sh)}
+.mini span{display:block;font-size:11.5px;color:var(--ink-3);font-weight:500}
+.mini b{display:block;font-size:20px;font-weight:700;margin-top:3px;letter-spacing:-.01em}
+.mini small{display:block;font-size:11px;color:var(--ink-3);margin-top:2px}
+.bloco{background:#fff;border-radius:16px;padding:17px;margin-bottom:12px;box-shadow:var(--sh)}
+.blH{display:flex;align-items:center;gap:8px;margin-bottom:14px}
+.blH b{font-size:14.5px;flex:1}
+.blH span{font-size:11.5px;color:var(--ink-3)}
+.lin{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--linha)}
+.lin:last-child{border-bottom:none}
+.pos{width:24px;height:24px;border-radius:8px;background:var(--acc-soft);color:var(--acc-d);
+  display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700;flex:none}
+.linN{flex:1;min-width:0}
+.linN b{display:block;font-size:13.5px;font-weight:600}
+.linN small{display:block;font-size:11.5px;color:var(--ink-3)}
+.linV{text-align:right;white-space:nowrap}
+.linV b{display:block;font-size:14px;font-weight:700}
+.linV small{display:block;font-size:11px;color:var(--ink-3)}
+.barra{height:6px;border-radius:3px;background:var(--linha);overflow:hidden;margin-top:5px}
+.barra i{display:block;height:100%;background:var(--acc);border-radius:3px}
+.grafB{display:flex;align-items:flex-end;gap:5px;height:120px;margin-top:6px}
+.gCol{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px}
+.gBar{width:100%;background:linear-gradient(180deg,var(--acc),#00806F);border-radius:5px 5px 0 0;
+  min-height:3px;transition:.2s}
+.gLb{font-size:9.5px;color:var(--ink-3)}
+.vazio{text-align:center;padding:50px 20px;color:var(--ink-3);font-size:13.5px}
+.carreg{text-align:center;padding:70px 20px;color:var(--ink-3)}
+.spin{width:26px;height:26px;border:3px solid var(--linha);border-top-color:var(--acc);
+  border-radius:50%;margin:0 auto 14px;animation:g .7s linear infinite}
+@keyframes g{to{transform:rotate(360deg)}}
+.vg{color:var(--vg)} .vr{color:var(--vr)}
+.instala{position:fixed;left:14px;right:14px;bottom:14px;background:var(--deep);color:#fff;
+  border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.3);z-index:50;max-width:530px;margin:0 auto}
+.instala b{display:block;font-size:13.5px}
+.instala span{display:block;font-size:11.5px;color:rgba(255,255,255,.6)}
+.instala button{background:var(--acc);border-radius:9px;padding:9px 14px;font-size:12.5px;
+  font-weight:600;color:#fff;flex:none}
+.instala .x{background:none;color:rgba(255,255,255,.5);padding:4px 6px;font-size:18px}
+</style>
+</head>
+<body>
+<div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="app.js"></script>
+</body>
+</html>
