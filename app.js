@@ -71,7 +71,9 @@ async function carregar(){
     D.lojas=r[0].data||[]; D.pedidos=r[1].data||[]; D.produtos=r[2].data||[];
     var permitidas=lojasDoUsuario();
     if(!S.loja)S.loja=permitidas.length===1?permitidas[0].id:'todas';
+    ULT=Date.now();
     render();
+    ligarAtualizacao();
   }catch(e){
     $('app').innerHTML='<div class="vazio">Não consegui carregar os dados.<br><br>'+
       '<button class="btnP" style="max-width:200px;margin:0 auto" onclick="carregar()">Tentar de novo</button></div>';
@@ -125,6 +127,69 @@ function periodoAnterior(){
   });
 }
 
+/* ---------- atualização ---------- */
+var ULT=null, _tAtu=null;
+function textoAtualizado(){
+  if(!ULT)return 'carregando...';
+  var seg=Math.round((Date.now()-ULT)/1000);
+  if(seg<60)return 'atualizado agora';
+  if(seg<3600)return 'atualizado há '+Math.round(seg/60)+' min';
+  return 'atualizado às '+new Date(ULT).toLocaleTimeString('pt-BR').slice(0,5);
+}
+async function atualizar(silencioso){
+  var bt=document.getElementById('btAtu');
+  if(bt)bt.classList.add('girando');
+  try{
+    var desde=diasAtras(400);
+    var r=await Promise.all([
+      sb.from('sucursais').select('*').eq('ativa',true),
+      sb.from('pedidos').select('*').gte('data',desde).limit(20000)
+    ]);
+    if(r[0].data)D.lojas=r[0].data;
+    if(r[1].data)D.pedidos=r[1].data;
+    ULT=Date.now();
+    render();
+  }catch(e){}
+  var b2=document.getElementById('btAtu');
+  if(b2)b2.classList.remove('girando');
+}
+/* atualiza sozinho a cada minuto e ao voltar para o aplicativo */
+function ligarAtualizacao(){
+  if(_tAtu)clearInterval(_tAtu);
+  _tAtu=setInterval(function(){
+    if(document.visibilityState==='visible'&&U)atualizar(true);
+  },60000);
+  document.addEventListener('visibilitychange',function(){
+    if(document.visibilityState==='visible'&&U){
+      var el=document.getElementById('tpAt');
+      if(el)el.textContent=textoAtualizado();
+      if(!ULT||Date.now()-ULT>30000)atualizar(true);
+    }
+  });
+  /* relógio do "atualizado há X" */
+  setInterval(function(){
+    var el=document.getElementById('tpAt');
+    if(el)el.textContent=textoAtualizado();
+  },20000);
+}
+/* puxar para atualizar */
+var _y0=null;
+document.addEventListener('touchstart',function(e){
+  if(window.scrollY<=0)_y0=e.touches[0].clientY; else _y0=null;
+},{passive:true});
+document.addEventListener('touchmove',function(e){
+  if(_y0===null||!U)return;
+  var d=e.touches[0].clientY-_y0;
+  var el=document.getElementById('tpAt');
+  if(d>70&&el){el.textContent='solte para atualizar';}
+},{passive:true});
+document.addEventListener('touchend',function(e){
+  if(_y0===null||!U){_y0=null;return;}
+  var el=document.getElementById('tpAt');
+  if(el&&el.textContent==='solte para atualizar')atualizar();
+  _y0=null;
+});
+
 /* ---------- tela ---------- */
 var PERIODOS=[['hoje','Hoje'],['ontem','Ontem'],['7','7 dias'],
   ['mes','Este mês'],['passado','Mês passado'],['30','30 dias']];
@@ -148,6 +213,10 @@ function render(){
     '<div class="tpL">'+
      '<div class="tpAv">'+E((U.nome||'?').charAt(0).toUpperCase())+'</div>'+
      '<div class="tpN"><b>'+E(U.nome)+'</b><span>Nexor Gestão</span></div>'+
+     '<button class="tpAtu" onclick="atualizar()" id="btAtu" title="atualizar">'+
+      '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" '+
+      'stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/>'+
+      '<path d="M20.5 15a9 9 0 1 1-2.1-9.4L23 10"/></svg></button>'+
      '<button class="tpSair" onclick="sair()">sair</button>'+
     '</div>'+
     (lojas.length>1
@@ -158,6 +227,7 @@ function render(){
        }).join('')+'</select>'
      :'<div class="lojaSel" style="pointer-events:none;background-image:none">'+
        E((lojas[0]||{}).nome||'sua loja')+'</div>')+
+   '<div class="tpAtualizado" id="tpAt">'+textoAtualizado()+'</div>'+
    '</div></div>'+
 
    '<div class="esc">'+

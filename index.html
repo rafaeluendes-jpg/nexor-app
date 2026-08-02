@@ -63,6 +63,13 @@ input,select{font-family:inherit;font-size:16px}
   background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
   background-repeat:no-repeat;background-position:right 14px center}
 
+.tpAtu{width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.1);
+  display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85);margin-left:auto}
+.tpAtu.girando svg{animation:gira 1s linear infinite}
+@keyframes gira{to{transform:rotate(360deg)}}
+.tpSair{margin-left:8px!important}
+.tpAtualizado{font-size:11px;color:rgba(255,255,255,.45);margin-top:10px;text-align:center}
+
 /* ---------- período ---------- */
 .per{display:flex;gap:7px;padding:14px 18px 4px;overflow-x:auto;scrollbar-width:none}
 .per::-webkit-scrollbar{display:none}
