@@ -4,6 +4,15 @@
 var SB_URL='https://cevghkndzpzvnzwifhnm.supabase.co';
 var SB_KEY='sb_publishable_tH04wQWnUjOUQWePZ0Bshw_RirDPUDY';
 var sb=window.supabase.createClient(SB_URL,SB_KEY);
+var TOKEN=null;
+/* sessao vencida ou acesso desativado: volta para a entrada sem susto */
+function sessaoCaiu(){
+  TOKEN=null;U=null;
+  try{localStorage.removeItem('nexor_app')}catch(e){}
+  telaLogin();
+  var e=document.getElementById('lgE');
+  if(e)e.textContent='Sua sessão expirou. Entre de novo.';
+}
 
 var U=null, D={lojas:[],pedidos:[],produtos:[]},
     S={loja:'',periodo:'hoje',carregando:false};
@@ -43,32 +52,39 @@ async function entrar(){
   if(!lg||!sn){$('lgE').textContent='Informe usuário e senha.';return;}
   $('lgE').textContent='entrando...';
   try{
-    var r=await sb.from('app_usuarios').select('*').eq('login',lg).maybeSingle();
-    var u=r.data;
-    if(!u||u.senha!==sn){$('lgE').textContent='Usuário ou senha inválidos.';return;}
-    if(u.ativo===false){$('lgE').textContent='Acesso desativado. Fale com o administrador.';return;}
-    U=u;
-    try{localStorage.setItem('nexor_app',JSON.stringify({login:lg,senha:sn}))}catch(e){}
-    sb.from('app_usuarios').update({ultimo_acesso:new Date().toISOString()})
-      .eq('id',u.id).then(function(){},function(){});
+    /* a senha nao sai mais do banco: quem confere e a funcao app_entrar,
+       que devolve um token. O aparelho nunca ve a senha de ninguem. */
+    var r=await sb.rpc('app_entrar',{p_login:lg,p_senha:sn});
+    var d=r.data||{};
+    if(r.error){ $('lgE').textContent='Não consegui entrar agora. Tente de novo.'; return; }
+    if(d.erro==='bloqueado'){
+      var q=new Date(d.ate);
+      $('lgE').textContent='Muitas tentativas. Tente de novo às '+
+        q.toLocaleTimeString('pt-BR').slice(0,5)+'.';return;
+    }
+    if(d.erro==='inativo'){$('lgE').textContent='Acesso desativado. Fale com o administrador.';return;}
+    if(!d.token){$('lgE').textContent='Usuário ou senha inválidos.';return;}
+    U=d.usuario; TOKEN=d.token;
+    try{localStorage.setItem('nexor_app',JSON.stringify({token:TOKEN,usuario:U}))}catch(e){}
     carregar();
   }catch(e){ $('lgE').textContent='Não consegui entrar agora. Tente de novo.'; }
 }
 function sair(){
+  try{ if(TOKEN)sb.rpc('app_sair',{p_token:TOKEN}); }catch(e){}
   try{localStorage.removeItem('nexor_app')}catch(e){}
-  U=null;telaLogin();
+  U=null;TOKEN=null;telaLogin();
 }
 /* ---------- dados ---------- */
 async function carregar(){
   $('app').innerHTML='<div class="carreg"><div class="spin"></div>carregando os números...</div>';
   try{
-    var desde=diasAtras(400);
-    var r=await Promise.all([
-      sb.from('sucursais').select('*').eq('ativa',true),
-      sb.from('pedidos').select('*').gte('data',desde).limit(20000),
-      sb.from('produtos').select('id,nome,categoria_id')
-    ]);
-    D.lojas=r[0].data||[]; D.pedidos=r[1].data||[]; D.produtos=r[2].data||[];
+    /* uma chamada so, e ela ja devolve apenas as lojas deste acesso.
+       Antes eram tres consultas abertas, que qualquer um podia fazer. */
+    var r=await sb.rpc('app_dados',{p_token:TOKEN,p_dias:400});
+    var d=r.data||{};
+    if(r.error)throw r.error;
+    if(d.erro){ sessaoCaiu(); return; }
+    D.lojas=d.lojas||[]; D.pedidos=d.pedidos||[]; D.produtos=d.produtos||[];
     var permitidas=lojasDoUsuario();
     if(!S.loja)S.loja=permitidas.length===1?permitidas[0].id:'todas';
     ULT=Date.now();
@@ -140,13 +156,12 @@ async function atualizar(silencioso){
   var bt=document.getElementById('btAtu');
   if(bt)bt.classList.add('girando');
   try{
-    var desde=diasAtras(400);
-    var r=await Promise.all([
-      sb.from('sucursais').select('*').eq('ativa',true),
-      sb.from('pedidos').select('*').gte('data',desde).limit(20000)
-    ]);
-    if(r[0].data)D.lojas=r[0].data;
-    if(r[1].data)D.pedidos=r[1].data;
+    var r=await sb.rpc('app_dados',{p_token:TOKEN,p_dias:400});
+    var d=r.data||{};
+    if(d.erro){ sessaoCaiu(); return; }
+    if(d.lojas)D.lojas=d.lojas;
+    if(d.pedidos)D.pedidos=d.pedidos;
+    if(d.produtos)D.produtos=d.produtos;
     ULT=Date.now();
     render();
   }catch(e){}
@@ -388,11 +403,20 @@ function dispensarInst(){
 (async function(){
   try{
     var g=JSON.parse(localStorage.getItem('nexor_app')||'null');
-    if(g&&g.login){
-      var r=await sb.from('app_usuarios').select('*').eq('login',g.login).maybeSingle();
-      if(r.data&&r.data.senha===g.senha&&r.data.ativo!==false){
-        U=r.data;carregar();return;
+    if(g&&g.token){
+      /* a senha nao fica mais guardada no aparelho — so o token, que vence
+         em 30 dias e pode ser cortado pelo banco a qualquer momento */
+      TOKEN=g.token; U=g.usuario||null;
+      var r=await sb.rpc('app_dados',{p_token:TOKEN,p_dias:400});
+      var d=r.data||{};
+      if(!r.error&&!d.erro){
+        D.lojas=d.lojas||[]; D.pedidos=d.pedidos||[]; D.produtos=d.produtos||[];
+        var permitidas=lojasDoUsuario();
+        if(!S.loja)S.loja=permitidas.length===1?permitidas[0].id:'todas';
+        ULT=Date.now(); render(); ligarAtualizacao(); return;
       }
+      TOKEN=null;U=null;
+      try{localStorage.removeItem('nexor_app')}catch(e){}
     }
   }catch(e){}
   telaLogin();
