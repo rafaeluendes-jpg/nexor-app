@@ -22,7 +22,22 @@ function sessaoCaiu(){
    for diferente da que esta rodando, mostra um aviso com um botao que
    recarrega ignorando o que estiver guardado.
    ========================================================== */
-var VERSAO_APP='5';
+var VERSAO_APP='6';
+/* ==========================================================
+   REGISTRA O SERVICE WORKER
+
+   Sem isto o Android nao oferece "instalar aplicativo": cria so um
+   atalho, aquele com a bolinha do Google no canto, que abre dentro do
+   navegador.
+
+   Falha em silencio de proposito: se o navegador nao suportar, o app
+   continua funcionando pelo link — so nao instala.
+   ========================================================== */
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  });
+}
 async function conferirVersaoApp(){
   try{
     var r=await fetch('index.html?t='+Date.now(),{cache:'no-store'});
