@@ -36,7 +36,7 @@ function mesPassado(){var d=new Date();d.setMonth(d.getMonth()-1);return d.toISO
 function telaLogin(erro){
   $('app').innerHTML='<div class="lg">'+
    '<div class="lgLogo"><b>N</b></div>'+
-   '<h1>Nexor Gestão</h1><p>acompanhe sua loja de onde estiver</p>'+
+   '<h1>Joia Gestão</h1><p>acompanhe sua loja de onde estiver</p>'+
    '<div class="lgCard">'+
     '<div class="cp"><label>Usuário</label><input id="lgU" autocapitalize="off" autocomplete="username"></div>'+
     '<div class="cp"><label>Senha</label><input id="lgP" type="password" autocomplete="current-password"></div>'+
@@ -227,7 +227,7 @@ function render(){
    '<div class="topo"><div class="topoIn">'+
     '<div class="tpL">'+
      '<div class="tpAv">'+E((U.nome||'?').charAt(0).toUpperCase())+'</div>'+
-     '<div class="tpN"><b>'+E(U.nome)+'</b><span>Nexor Gestão</span></div>'+
+     '<div class="tpN"><b>'+E(U.nome)+'</b><span>Joia Gestão</span></div>'+
      '<button class="tpAtu" onclick="atualizar()" id="btAtu" title="atualizar">'+
       '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" '+
       'stroke-width="2" stroke-linecap="round"><polyline points="23 4 23 10 17 10"/>'+
@@ -383,7 +383,7 @@ function mostraInstalar(){
   if(!_instalar&&!iOS)return;
   var d=document.createElement('div');
   d.id='barraInst';d.className='instala';
-  d.innerHTML='<div style="flex:1"><b>Instalar o Nexor Gestão</b>'+
+  d.innerHTML='<div style="flex:1"><b>Instalar o Joia Gestão</b>'+
    '<span>'+(iOS?'toque em Compartilhar e depois em "Adicionar à Tela de Início"'
      :'fica com ícone próprio no seu celular')+'</span></div>'+
    (iOS?'':'<button onclick="instalarApp()">Instalar</button>')+
