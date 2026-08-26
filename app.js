@@ -22,7 +22,7 @@ function sessaoCaiu(){
    for diferente da que esta rodando, mostra um aviso com um botao que
    recarrega ignorando o que estiver guardado.
    ========================================================== */
-var VERSAO_APP='6';
+var VERSAO_APP='7';
 /* ==========================================================
    REGISTRA O SERVICE WORKER
 
@@ -122,7 +122,7 @@ function telaLogin(erro){
   $('app').innerHTML='<div class="lg">'+
    /* o "N" era do nome antigo. Agora usa o proprio icone do aplicativo,
       para a tela de entrada e o atalho no celular serem a mesma marca. */
-   '<div class="lgLogo"><img src="icone.png?v=2" alt="Joia Gestão"></div>'+
+   '<div class="lgLogo"><img src="icone.png?v=3" alt="Joia Gestão"></div>'+
    '<h1>Joia Gestão</h1><p>acompanhe sua loja de onde estiver</p>'+
    '<div class="lgCard">'+
     '<div class="cp"><label>Usuário</label><input id="lgU" autocapitalize="off" autocomplete="username"></div>'+
