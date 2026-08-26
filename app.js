@@ -35,7 +35,9 @@ function mesPassado(){var d=new Date();d.setMonth(d.getMonth()-1);return d.toISO
 /* ---------- login ---------- */
 function telaLogin(erro){
   $('app').innerHTML='<div class="lg">'+
-   '<div class="lgLogo"><b>N</b></div>'+
+   /* o "N" era do nome antigo. Agora usa o proprio icone do aplicativo,
+      para a tela de entrada e o atalho no celular serem a mesma marca. */
+   '<div class="lgLogo"><img src="icone.png" alt="Joia Gestão"></div>'+
    '<h1>Joia Gestão</h1><p>acompanhe sua loja de onde estiver</p>'+
    '<div class="lgCard">'+
     '<div class="cp"><label>Usuário</label><input id="lgU" autocapitalize="off" autocomplete="username"></div>'+

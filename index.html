@@ -34,6 +34,10 @@ input,select{font-family:inherit;font-size:16px}
 .lgLogo{width:76px;height:76px;border-radius:20px;background:#fff;display:flex;
   align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
 .lgLogo b{font-size:34px;color:var(--acc);font-weight:800}
+/* o icone preenche a caixa toda: sem moldura branca em volta, que fazia
+   a marca parecer colada dentro de um quadrado */
+.lgLogo{background:transparent;overflow:hidden}
+.lgLogo img{width:100%;height:100%;object-fit:cover;display:block}
 .lg h1{margin:0 0 4px;font-size:23px;color:#fff;font-weight:700;letter-spacing:-.02em}
 .lg p{margin:0 0 30px;font-size:13px;color:rgba(255,255,255,.55)}
 .lgCard{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:370px;
@@ -130,6 +134,6 @@ input,select{font-family:inherit;font-size:16px}
 <body>
 <div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=2"></script>
+<script src="app.js?v=3"></script>
 </body>
 </html>
