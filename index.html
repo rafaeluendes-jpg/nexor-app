@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Joia Gestão</title>
-<meta name="theme-color" content="#0B1F2E">
+<meta name="theme-color" content="#173629">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Joia Gestão">
@@ -26,12 +26,25 @@
 <link rel="icon" href="icone.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* ==========================================================
+   AS CORES DA JOIA
+
+   O aplicativo estava com azul-petroleo e verde-agua — paleta de outra
+   identidade, herdada do nome antigo. Nao conversava com a marca: quem
+   abria o Joia no computador e o aplicativo no celular via duas
+   empresas diferentes.
+
+   Agora vale a paleta da Joia: verde profundo e dourado, o mesmo do
+   letreiro e do icone. O fundo claro puxa para o creme, nao para o
+   cinza-azulado, para o dourado nao ficar sujo em cima dele.
+   ========================================================== */
 :root{
-  --fundo:#F4F6F8; --card:#FFFFFF; --deep:#0B1F2E; --deep2:#143349;
-  --acc:#00A08B; --acc-d:#007A69; --acc-soft:#E6F5F2;
-  --ink:#16212B; --ink-2:#4A5A68; --ink-3:#8A98A5;
-  --linha:#E3E9EE; --vg:#0E8A46; --vr:#C94141; --amber:#B8730B;
-  --sh:0 1px 3px rgba(11,31,46,.06),0 4px 16px rgba(11,31,46,.06);
+  --fundo:#F6F4EF; --card:#FFFFFF; --deep:#173629; --deep2:#1F4738;
+  --acc:#2F6B4F; --acc-d:#1F4C38; --acc-soft:#E9F1EC;
+  --ouro:#C6A05C; --ouro-c:#E2C48A; --ouro-soft:#FAF3E6;
+  --ink:#1D2A22; --ink-2:#4E5D53; --ink-3:#8B968D;
+  --linha:#E6E2D8; --vg:#2F7D4F; --vr:#B3352B; --amber:#9A6B12;
+  --sh:0 1px 3px rgba(23,54,43,.07),0 4px 16px rgba(23,54,43,.07);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{margin:0;background:var(--fundo);color:var(--ink);
@@ -44,15 +57,20 @@ input,select{font-family:inherit;font-size:16px}
 /* ---------- login ---------- */
 .lg{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:28px;background:linear-gradient(160deg,var(--deep),var(--deep2))}
-.lgLogo{width:76px;height:76px;border-radius:20px;background:#fff;display:flex;
-  align-items:center;justify-content:center;margin-bottom:18px;box-shadow:0 12px 32px rgba(0,0,0,.25)}
-.lgLogo b{font-size:34px;color:var(--acc);font-weight:800}
+.lgLogo{width:96px;height:96px;border-radius:24px;display:flex;
+  align-items:center;justify-content:center;margin:0 auto 20px;
+  overflow:hidden;box-shadow:0 14px 36px rgba(0,0,0,.32);
+  border:1px solid rgba(198,160,92,.35)}
+.lgLogo b{font-size:34px;color:var(--ouro);font-weight:800}
 /* o icone preenche a caixa toda: sem moldura branca em volta, que fazia
    a marca parecer colada dentro de um quadrado */
 .lgLogo{background:transparent;overflow:hidden}
 .lgLogo img{width:100%;height:100%;object-fit:cover;display:block}
-.lg h1{margin:0 0 4px;font-size:23px;color:#fff;font-weight:700;letter-spacing:-.02em}
-.lg p{margin:0 0 30px;font-size:13px;color:rgba(255,255,255,.55)}
+/* o titulo em dourado, como no letreiro; tudo centralizado de verdade */
+.lg{text-align:center}
+.lg h1{margin:0 0 5px;font-size:25px;color:var(--ouro-c);font-weight:700;
+  letter-spacing:.01em}
+.lg p{margin:0 0 30px;font-size:13px;color:rgba(255,255,255,.6)}
 .lgCard{background:#fff;border-radius:18px;padding:24px;width:100%;max-width:370px;
   box-shadow:0 20px 50px rgba(0,0,0,.25)}
 .cp{margin-bottom:14px}
@@ -60,8 +78,10 @@ input,select{font-family:inherit;font-size:16px}
   text-transform:uppercase;letter-spacing:.05em}
 .cp input{width:100%;border:1.5px solid var(--linha);border-radius:11px;padding:13px 14px;outline:none}
 .cp input:focus{border-color:var(--acc)}
-.btnP{width:100%;background:var(--acc);color:#fff;border-radius:11px;padding:15px;
-  font-size:15px;font-weight:600;margin-top:4px}
+/* o botao principal em dourado sobre o verde: e o contraste da marca */
+.btnP{width:100%;background:var(--ouro);color:#173629;border-radius:11px;padding:15px;
+  font-size:15px;font-weight:700;margin-top:6px;letter-spacing:.01em}
+.btnP:active{background:var(--ouro-c)}
 .btnP:active{background:var(--acc-d)}
 .erro{color:var(--vr);font-size:12.5px;margin-top:10px;text-align:center;min-height:16px}
 
@@ -147,6 +167,6 @@ input,select{font-family:inherit;font-size:16px}
 <body>
 <div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=4"></script>
+<script src="app.js?v=5"></script>
 </body>
 </html>

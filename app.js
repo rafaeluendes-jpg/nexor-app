@@ -22,7 +22,7 @@ function sessaoCaiu(){
    for diferente da que esta rodando, mostra um aviso com um botao que
    recarrega ignorando o que estiver guardado.
    ========================================================== */
-var VERSAO_APP='4';
+var VERSAO_APP='5';
 async function conferirVersaoApp(){
   try{
     var r=await fetch('index.html?t='+Date.now(),{cache:'no-store'});
@@ -58,10 +58,49 @@ function curto(v){
   if(v>=1000)return (v/1000).toFixed(1).replace('.',',')+'k';
   return money(v);
 }
-function hojeISO(){return new Date().toISOString().slice(0,10)}
-function diasAtras(n){var d=new Date();d.setDate(d.getDate()-n);return d.toISOString().slice(0,10)}
+/* ==========================================================
+   AQUI ESTAVA O FATURAMENTO ZERADO
+
+   `toISOString()` devolve a data em UTC, sempre. As 22:50 de Sao Paulo
+   ja e dia 26 em Greenwich — entao o aplicativo perguntava "quais
+   vendas sao do dia 26?" enquanto as vendas da noite estavam gravadas
+   no dia 25, que e o dia da loja.
+
+   Nenhuma batia. O app mostrava zero com a loja tendo vendido
+   R$ 1.291,00, e o banco entregando os 383 pedidos corretamente.
+
+   E o mesmo defeito que zerava o Faturamento no sistema (V167): a data
+   vem certa do banco, e quem pergunta usa o calendario errado.
+
+   Agora "hoje" e o dia da LOJA. E `data` ja chega pronto nesse mesmo
+   fuso, entao os dois lados falam a mesma lingua.
+   ========================================================== */
+var FUSO_LOJA='America/Sao_Paulo';
+function diaEm(d){
+  try{
+    return new Intl.DateTimeFormat('en-CA',{timeZone:FUSO_LOJA,
+      year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+  }catch(e){
+    var l=new Date(d.getTime()-d.getTimezoneOffset()*60000);
+    return l.toISOString().slice(0,10);
+  }
+}
+function hojeISO(){ return diaEm(new Date()); }
+function diasAtras(n){
+  /* anda pelo dia da loja, nao pelo relogio do aparelho: quem abre o app
+     as 22h nao pode ver "ontem" adiantado um dia */
+  var base=new Date(hojeISO()+'T12:00:00');
+  base.setDate(base.getDate()-n);
+  var a=base.getFullYear(), m=String(base.getMonth()+1).padStart(2,'0'),
+      dd=String(base.getDate()).padStart(2,'0');
+  return a+'-'+m+'-'+dd;
+}
 function mesAtual(){return hojeISO().slice(0,7)}
-function mesPassado(){var d=new Date();d.setMonth(d.getMonth()-1);return d.toISOString().slice(0,7)}
+function mesPassado(){
+  var b=new Date(hojeISO()+'T12:00:00');
+  b.setDate(1); b.setMonth(b.getMonth()-1);
+  return b.getFullYear()+'-'+String(b.getMonth()+1).padStart(2,'0');
+}
 
 /* ---------- login ---------- */
 function telaLogin(erro){
