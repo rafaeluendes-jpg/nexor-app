@@ -109,6 +109,36 @@ function podeVer(chave){
   return c.indexOf(chave)>=0;
 }
 /* ---------- filtro ---------- */
+/* ==========================================================
+   O DIA DA VENDA VEM PRONTO DO BANCO
+
+   Este arquivo lia `p.data` e cortava os 10 primeiros caracteres. Dois
+   problemas de uma vez: a coluna nao se chama `data` (e `data_venda`),
+   entao vinha SEMPRE vazio — nenhum pedido batia com nenhum periodo, e
+   o app mostrava faturamento zero com a loja vendendo o dia todo.
+
+   E, mesmo que o nome estivesse certo, `data_venda` vem em UTC: venda
+   das 21:43 apareceria no dia seguinte.
+
+   Agora `app_dados` ja devolve o campo `data` como o DIA DA LOJA
+   (America/Sao_Paulo), pronto para comparar. Esta funcao aceita o
+   formato novo e ainda entende `data_venda`, para o caso de o aparelho
+   estar com dados guardados do jeito antigo.
+   ========================================================== */
+function diaDoPedido(p){
+  if(!p)return '';
+  if(p.data&&String(p.data).length===10)return String(p.data);
+  var v=p.data||p.data_venda||'';
+  var t=String(v);
+  if(!t)return '';
+  if(t.length<=10)return t.slice(0,10);
+  var d=new Date(t);
+  if(isNaN(d))return t.slice(0,10);
+  try{
+    return new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',
+      year:'numeric',month:'2-digit',day:'2-digit'}).format(d);
+  }catch(e){ return t.slice(0,10); }
+}
 function pedidosFiltrados(){
   var ids=lojasDoUsuario().map(function(l){return l.id});
   return D.pedidos.filter(function(p){
@@ -116,7 +146,7 @@ function pedidosFiltrados(){
     var sid=p.sucursal_id;
     if(sid&&ids.indexOf(sid)<0)return false;
     if(S.loja!=='todas'&&sid&&sid!==S.loja)return false;
-    var d=String(p.data||'').slice(0,10);
+    var d=diaDoPedido(p);
     if(S.periodo==='hoje')return d===hojeISO();
     if(S.periodo==='ontem')return d===diasAtras(1);
     if(S.periodo==='7')return d>=diasAtras(6);
@@ -133,7 +163,7 @@ function periodoAnterior(){
     var sid=p.sucursal_id;
     if(sid&&ids.indexOf(sid)<0)return false;
     if(S.loja!=='todas'&&sid&&sid!==S.loja)return false;
-    var d=String(p.data||'').slice(0,10);
+    var d=diaDoPedido(p);
     if(S.periodo==='hoje')return d===diasAtras(1);
     if(S.periodo==='ontem')return d===diasAtras(2);
     if(S.periodo==='7')return d>=diasAtras(13)&&d<diasAtras(6);
@@ -327,7 +357,7 @@ function blocoEvolucao(){
       var sid=p.sucursal_id;
       if(sid&&ids.indexOf(sid)<0)return false;
       if(S.loja!=='todas'&&sid&&sid!==S.loja)return false;
-      return String(p.data||'').slice(0,porMes?7:10)===chave;
+      return diaDoPedido(p).slice(0,porMes?7:10)===chave;
     }).reduce(function(a,p){return a+(Number(p.total)||0)},0);
     dias.push({rot:rot,v:v});
   }
