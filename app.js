@@ -14,6 +14,37 @@ function sessaoCaiu(){
   if(e)e.textContent='Sua sessão expirou. Entre de novo.';
 }
 
+/* ==========================================================
+   O APLICATIVO AVISA QUANDO ESTA VELHO
+
+   Nao dá para pedir que a loja limpe o cache do celular a cada
+   correcao. Aqui ele pergunta ao servidor qual e a versao publicada; se
+   for diferente da que esta rodando, mostra um aviso com um botao que
+   recarrega ignorando o que estiver guardado.
+   ========================================================== */
+var VERSAO_APP='4';
+async function conferirVersaoApp(){
+  try{
+    var r=await fetch('index.html?t='+Date.now(),{cache:'no-store'});
+    var t=await r.text();
+    var m=t.match(/app\.js\?v=(\d+)/);
+    if(!m||m[1]===VERSAO_APP)return;
+    if(document.getElementById('avVer'))return;
+    var d=document.createElement('div');
+    d.id='avVer';
+    d.style.cssText='position:fixed;left:12px;right:12px;bottom:12px;z-index:99;'+
+      'background:#0E7C5A;color:#fff;padding:13px 15px;border-radius:12px;'+
+      'display:flex;align-items:center;gap:12px;font-size:14px;'+
+      'box-shadow:0 6px 24px rgba(0,0,0,.3)';
+    d.innerHTML='<div style="flex:1">Tem uma versão nova do aplicativo.</div>'+
+      '<button style="background:#fff;color:#0E7C5A;border:0;padding:9px 15px;'+
+      'border-radius:9px;font-weight:700;font-size:14px" '+
+      'onclick="location.reload(true)">Atualizar</button>';
+    document.body.appendChild(d);
+  }catch(e){}
+}
+setTimeout(conferirVersaoApp,3000);
+setInterval(conferirVersaoApp,180000);
 var U=null, D={lojas:[],pedidos:[],produtos:[]},
     S={loja:'',periodo:'hoje',carregando:false};
 
@@ -37,7 +68,7 @@ function telaLogin(erro){
   $('app').innerHTML='<div class="lg">'+
    /* o "N" era do nome antigo. Agora usa o proprio icone do aplicativo,
       para a tela de entrada e o atalho no celular serem a mesma marca. */
-   '<div class="lgLogo"><img src="icone.png" alt="Joia Gestão"></div>'+
+   '<div class="lgLogo"><img src="icone.png?v=2" alt="Joia Gestão"></div>'+
    '<h1>Joia Gestão</h1><p>acompanhe sua loja de onde estiver</p>'+
    '<div class="lgCard">'+
     '<div class="cp"><label>Usuário</label><input id="lgU" autocapitalize="off" autocomplete="username"></div>'+

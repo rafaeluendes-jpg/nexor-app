@@ -9,8 +9,21 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Joia Gestão">
 <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icone.png">
-<link rel="icon" href="icone.png">
+<!-- ==========================================================
+     O NAVEGADOR ESTAVA SERVINDO A VERSAO ANTIGA
+
+     Sem estas linhas o celular guarda a pagina e o icone por dias: a
+     correcao sobe para o servidor e a loja continua vendo o de ontem,
+     sem entender por que "nao mudou nada".
+
+     A pagina passa a ser sempre buscada; o programa e o icone levam
+     numero de versao, entao trocam quando a versao muda.
+     ========================================================== -->
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<link rel="apple-touch-icon" href="icone.png?v=2">
+<link rel="icon" href="icone.png?v=2">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -134,6 +147,6 @@ input,select{font-family:inherit;font-size:16px}
 <body>
 <div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=3"></script>
+<script src="app.js?v=4"></script>
 </body>
 </html>
