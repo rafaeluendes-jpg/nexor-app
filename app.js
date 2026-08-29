@@ -22,7 +22,26 @@ function sessaoCaiu(){
    for diferente da que esta rodando, mostra um aviso com um botao que
    recarrega ignorando o que estiver guardado.
    ========================================================== */
-var VERSAO_APP='7';
+/* ==========================================================
+   UM NUMERO SO, NUM LUGAR SO
+
+   O numero da versao vivia escrito aqui A MAO, e o `index.html` trazia
+   outro em `app.js?v=N`. Na correcao do grafico eu subi o do
+   `index.html` para 8 e esqueci este em 7 — e o aplicativo passou a
+   avisar "tem versao nova" a cada tres minutos, para sempre, ja
+   atualizado. Duas fontes para o mesmo numero e questao de tempo.
+
+   Agora ele le a propria tag que o carregou. So existe um numero, o do
+   `index.html`, e nao ha como os dois discordarem.
+   ========================================================== */
+var VERSAO_APP=(function(){
+  try{
+    var s=(document.currentScript&&document.currentScript.src)||'';
+    var m=s.match(/app\.js\?v=(\d+)/);
+    if(m)return m[1];
+  }catch(e){}
+  return '';
+})();
 /* ==========================================================
    REGISTRA O SERVICE WORKER
 
@@ -43,7 +62,9 @@ async function conferirVersaoApp(){
     var r=await fetch('index.html?t='+Date.now(),{cache:'no-store'});
     var t=await r.text();
     var m=t.match(/app\.js\?v=(\d+)/);
-    if(!m||m[1]===VERSAO_APP)return;
+    /* sem saber a versao que esta rodando, calar e melhor do que avisar
+       errado: aviso que nao sai nunca da tela e pior do que aviso nenhum */
+    if(!m||!VERSAO_APP||m[1]===VERSAO_APP)return;
     if(document.getElementById('avVer'))return;
     var d=document.createElement('div');
     d.id='avVer';
@@ -427,6 +448,22 @@ function blocoMaisVendidos(peds){
       '<div class="linV"><b>'+x.qtd+'</b><small>R$ '+curto(x.valor)+'</small></div></div>';
    }).join('')+'</div>';
 }
+/* ==========================================================
+   O NUMERO EM CIMA DA BARRA E CURTO, SEM CENTAVO
+
+   `curto()` devolve "268,00" abaixo de mil e "1,3k" acima. Numa fila de
+   sete numeros isso fica desalinhado — e centavo nao muda leitura
+   nenhuma num grafico de evolucao. Aqui vai "268" e "1,3k".
+   ========================================================== */
+function curtoGraf(v){
+  v=Number(v)||0;
+  if(v>=1000000)return curto(v);
+  /* de dez mil para cima a casa decimal nao acrescenta nada e a coluna
+     do grafico de 12 meses tem 28 px: "32k" cabe folgado, "32,0k" nao */
+  if(v>=10000)return Math.round(v/1000)+'k';
+  if(v>=1000)return (v/1000).toFixed(1).replace('.',',')+'k';
+  return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
 /* evolução */
 function blocoEvolucao(){
   var ids=lojasDoUsuario().map(function(l){return l.id});
@@ -454,7 +491,12 @@ function blocoEvolucao(){
    '<div class="grafB">'+dias.map(function(d){
      /* a barra vai dentro de `gArea`, que e quem tem altura de verdade:
         sem isso a porcentagem nao resolve e toda barra sai com 3 px */
+     /* o valor fica em cima da barra, sempre visivel: quem olha o
+        grafico quer o numero, e no celular nao existe passar o mouse
+        para ver a dica. Dia sem venda nao ganha um "0,00" para nao
+        poluir a linha de sete numeros */
      return '<div class="gCol">'+
+      '<div class="gVl">'+(d.v>0?E(curtoGraf(d.v)):'')+'</div>'+
       '<div class="gArea">'+
        '<div class="gBar" style="height:'+Math.max(3,(d.v/max)*100)+'%" title="R$ '+money(d.v)+'"></div>'+
       '</div>'+

@@ -159,10 +159,14 @@ input,select{font-family:inherit;font-size:16px}
    Agora a barra mora numa area propria que ocupa a altura que sobra da
    coluna (`flex:1`), e a porcentagem passa a ter contra o que medir.
    ========================================================== */
-.grafB{display:flex;align-items:stretch;gap:5px;height:120px;margin-top:6px}
+.grafB{display:flex;align-items:stretch;gap:5px;height:134px;margin-top:6px}
 .gCol{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
   height:100%;min-height:0}
 .gArea{flex:1;width:100%;display:flex;align-items:flex-end;min-height:0}
+/* o valor em cima da barra: altura fixa para as sete colunas ficarem
+   com a mesma base, mesmo quando um dia nao teve venda e fica vazio */
+.gVl{font-size:9px;font-weight:700;color:var(--ink-2,#4a5a55);height:12px;
+  line-height:12px;white-space:nowrap}
 .gBar{width:100%;background:linear-gradient(180deg,var(--acc),#00806F);border-radius:5px 5px 0 0;
   min-height:3px;transition:.2s}
 .gLb{font-size:9.5px;color:var(--ink-3)}
@@ -185,6 +189,6 @@ input,select{font-family:inherit;font-size:16px}
 <body>
 <div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=8"></script>
+<script src="app.js?v=9"></script>
 </body>
 </html>
