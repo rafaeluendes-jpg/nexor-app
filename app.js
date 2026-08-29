@@ -452,8 +452,12 @@ function blocoEvolucao(){
   return '<div class="bloco"><div class="blH"><b>Evolução</b>'+
    '<span>'+(porMes?'últimos 12 meses':'últimos 7 dias')+'</span></div>'+
    '<div class="grafB">'+dias.map(function(d){
+     /* a barra vai dentro de `gArea`, que e quem tem altura de verdade:
+        sem isso a porcentagem nao resolve e toda barra sai com 3 px */
      return '<div class="gCol">'+
-      '<div class="gBar" style="height:'+Math.max(3,(d.v/max)*100)+'%" title="R$ '+money(d.v)+'"></div>'+
+      '<div class="gArea">'+
+       '<div class="gBar" style="height:'+Math.max(3,(d.v/max)*100)+'%" title="R$ '+money(d.v)+'"></div>'+
+      '</div>'+
       '<div class="gLb">'+d.rot+'</div></div>';
    }).join('')+'</div></div>';
 }
