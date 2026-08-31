@@ -88,12 +88,19 @@ function $(id){return document.getElementById(id)}
 function E(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){
   return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 function money(v){return (Number(v)||0).toFixed(2).replace('.',',').replace(/\B(?=(\d{3})+(?!\d))/g,'.')}
-function curto(v){
-  v=Number(v)||0;
-  if(v>=1000000)return (v/1000000).toFixed(1).replace('.',',')+'M';
-  if(v>=1000)return (v/1000).toFixed(1).replace('.',',')+'k';
-  return money(v);
-}
+/* ==========================================================
+   UMA LINGUA SO PARA DINHEIRO
+
+   O aplicativo falava tres dialetos na mesma tela: "R$ 1.234,56" no
+   total do dia, "R$ 1,2k" na linha de Entrega e Balcao, e "1,3k" em
+   cima da barra do grafico. Tres jeitos de escrever o mesmo real.
+
+   Ordem do Rafael em 31/08/2026: nada de "k", nada de "M" — dinheiro se
+   escreve por extenso, com os centavos, em todo lugar. `money()` e a
+   unica funcao. As duas abreviacoes foram REMOVIDAS, e nao
+   transformadas em atalho para `money()`: funcao que so repassa e a
+   porta por onde a abreviacao volta na proxima correcao.
+   ========================================================== */
 /* ==========================================================
    AQUI ESTAVA O FATURAMENTO ZERADO
 
@@ -403,9 +410,9 @@ function render(){
       ' vs '+textoComparacao()+'</small>':'')+'</div>'+
     '<div class="mini"><span>Ticket médio</span><b>R$ '+money(peds.length?tot/peds.length:0)+'</b></div>'+
     '<div class="mini"><span>Entregas</span><b>'+ent.length+'</b>'+
-     '<small>R$ '+curto(vEnt)+'</small></div>'+
+     '<small>R$ '+money(vEnt)+'</small></div>'+
     '<div class="mini"><span>Frente de caixa</span><b>'+bal.length+'</b>'+
-     '<small>R$ '+curto(vBal)+'</small></div>'+
+     '<small>R$ '+money(vBal)+'</small></div>'+
    '</div>'+
 
    (peds.length?blocoMaisVendidos(peds):'')+
@@ -445,24 +452,8 @@ function blocoMaisVendidos(peds){
      return '<div class="lin"><div class="pos">'+(k+1)+'</div>'+
       '<div class="linN"><b>'+E(x.nome)+'</b>'+
        '<div class="barra"><i style="width:'+(x.qtd/max*100)+'%"></i></div></div>'+
-      '<div class="linV"><b>'+x.qtd+'</b><small>R$ '+curto(x.valor)+'</small></div></div>';
+      '<div class="linV"><b>'+x.qtd+'</b><small>R$ '+money(x.valor)+'</small></div></div>';
    }).join('')+'</div>';
-}
-/* ==========================================================
-   O NUMERO EM CIMA DA BARRA E CURTO, SEM CENTAVO
-
-   `curto()` devolve "268,00" abaixo de mil e "1,3k" acima. Numa fila de
-   sete numeros isso fica desalinhado — e centavo nao muda leitura
-   nenhuma num grafico de evolucao. Aqui vai "268" e "1,3k".
-   ========================================================== */
-function curtoGraf(v){
-  v=Number(v)||0;
-  if(v>=1000000)return curto(v);
-  /* de dez mil para cima a casa decimal nao acrescenta nada e a coluna
-     do grafico de 12 meses tem 28 px: "32k" cabe folgado, "32,0k" nao */
-  if(v>=10000)return Math.round(v/1000)+'k';
-  if(v>=1000)return (v/1000).toFixed(1).replace('.',',')+'k';
-  return String(Math.round(v)).replace(/\B(?=(\d{3})+(?!\d))/g,'.');
 }
 /* evolução */
 function blocoEvolucao(){
@@ -496,7 +487,7 @@ function blocoEvolucao(){
         para ver a dica. Dia sem venda nao ganha um "0,00" para nao
         poluir a linha de sete numeros */
      return '<div class="gCol">'+
-      '<div class="gVl">'+(d.v>0?E(curtoGraf(d.v)):'')+'</div>'+
+      '<div class="gVl">'+(d.v>0?E(money(d.v)):'')+'</div>'+
       '<div class="gArea">'+
        '<div class="gBar" style="height:'+Math.max(3,(d.v/max)*100)+'%" title="R$ '+money(d.v)+'"></div>'+
       '</div>'+
@@ -518,18 +509,18 @@ function blocoDetalhe(peds,vEnt,vBal,taxas,nCli){
   return '<div class="bloco"><div class="blH"><b>Detalhamento</b></div>'+
    '<div class="lin"><div class="linN"><b>Entregas</b>'+
     '<div class="barra"><i style="width:'+(tot?vEnt/tot*100:0)+'%"></i></div></div>'+
-    '<div class="linV"><b>R$ '+curto(vEnt)+'</b><small>'+(tot?(vEnt/tot*100).toFixed(0):0)+'%</small></div></div>'+
+    '<div class="linV"><b>R$ '+money(vEnt)+'</b><small>'+(tot?(vEnt/tot*100).toFixed(0):0)+'%</small></div></div>'+
    '<div class="lin"><div class="linN"><b>Frente de caixa</b>'+
     '<div class="barra"><i style="width:'+(tot?vBal/tot*100:0)+'%"></i></div></div>'+
-    '<div class="linV"><b>R$ '+curto(vBal)+'</b><small>'+(tot?(vBal/tot*100).toFixed(0):0)+'%</small></div></div>'+
+    '<div class="linV"><b>R$ '+money(vBal)+'</b><small>'+(tot?(vBal/tot*100).toFixed(0):0)+'%</small></div></div>'+
    (taxas?'<div class="lin"><div class="linN"><b>Taxas de entrega</b></div>'+
-    '<div class="linV"><b>R$ '+curto(taxas)+'</b></div></div>':'')+
+    '<div class="linV"><b>R$ '+money(taxas)+'</b></div></div>':'')+
    (nCli?'<div class="lin"><div class="linN"><b>Clientes atendidos</b></div>'+
     '<div class="linV"><b>'+nCli+'</b></div></div>':'')+
    (pags.length?'<div class="blH" style="margin-top:16px"><b>Formas de pagamento</b></div>'+
     pags.map(function(p){
       return '<div class="lin"><div class="linN"><b>'+E(p.nome)+'</b></div>'+
-      '<div class="linV"><b>R$ '+curto(p.valor)+'</b></div></div>';
+      '<div class="linV"><b>R$ '+money(p.valor)+'</b></div></div>';
     }).join(''):'')+
    '</div>';
 }

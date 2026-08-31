@@ -159,14 +159,30 @@ input,select{font-family:inherit;font-size:16px}
    Agora a barra mora numa area propria que ocupa a altura que sobra da
    coluna (`flex:1`), e a porcentagem passa a ter contra o que medir.
    ========================================================== */
-.grafB{display:flex;align-items:stretch;gap:5px;height:134px;margin-top:6px}
-.gCol{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;
-  height:100%;min-height:0}
+/* ==========================================================
+   O VALOR POR EXTENSO PRECISA CABER
+
+   Com "1,3k" a coluna de 26 px do grafico de 12 meses dava conta. Com
+   "1.234,56" — que e como o dinheiro passou a ser escrito em todo o
+   aplicativo — nao da: o texto sairia por cima do vizinho ou seria
+   cortado.
+
+   Medido no celular de 390 px: a faixa tem 362 px uteis e o maior
+   rotulo, "15.230,00", pede 46. Com a folga entre colunas em 4 px, os
+   SETE DIAS cabem inteiros sem rolar — que e a tela do dia a dia.
+   Doze meses nao cabem de jeito nenhum (precisariam de 596), entao a
+   faixa ganhou rolagem PROPRIA: ela rola de lado, a PAGINA nunca.
+   ========================================================== */
+.grafB{display:flex;align-items:stretch;gap:4px;height:134px;margin-top:6px;
+  overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;padding-bottom:2px}
+.gCol{flex:1 0 auto;min-width:46px;display:flex;flex-direction:column;
+  align-items:center;gap:5px;height:100%;min-height:0}
 .gArea{flex:1;width:100%;display:flex;align-items:flex-end;min-height:0}
 /* o valor em cima da barra: altura fixa para as sete colunas ficarem
    com a mesma base, mesmo quando um dia nao teve venda e fica vazio */
-.gVl{font-size:9px;font-weight:700;color:var(--ink-2,#4a5a55);height:12px;
-  line-height:12px;white-space:nowrap}
+.gVl{font-size:8.5px;font-weight:700;color:var(--ink-2,#4a5a55);height:12px;
+  line-height:12px;white-space:nowrap;letter-spacing:-.3px}
 .gBar{width:100%;background:linear-gradient(180deg,var(--acc),#00806F);border-radius:5px 5px 0 0;
   min-height:3px;transition:.2s}
 .gLb{font-size:9.5px;color:var(--ink-3)}
@@ -189,6 +205,6 @@ input,select{font-family:inherit;font-size:16px}
 <body>
 <div id="app"><div class="carreg"><div class="spin"></div>carregando...</div></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="app.js?v=9"></script>
+<script src="app.js?v=10"></script>
 </body>
 </html>
