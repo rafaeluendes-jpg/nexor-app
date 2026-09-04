@@ -50,11 +50,12 @@ const peds = [
 ];
 const html = blocoMaisVendidos(peds);
 
-console.log('\n── 1. O CMV é custo da ficha × quantidade vendida\n');
-/* Copo M: 3 un × 4,8939 = 14,6817 → 14,68 */
-t('Copo M (3 vendidos) mostra CMV R$ 14,68', /CMV: R\$ 14,68/.test(html), html);
-/* Copo P: 1 un × 3,7478 = 3,7478 → 3,75 */
-t('Copo P (1 vendido) mostra CMV R$ 3,75', /CMV: R\$ 3,75/.test(html), html);
+console.log('\n── 1. O CMV é percentual: custo × quantidade ÷ faturamento\n');
+/* Copo M: 3 un × 4,8939 = 14,6817; faturamento 60 → 24,47% → 24,5% */
+t('Copo M mostra CMV 24,5%', /CMV: 24,5%/.test(html), html);
+/* Copo P: 1 un × 3,7478 = 3,7478; faturamento 15 → 24,99% → 25,0% */
+t('Copo P mostra CMV 25,0%', /CMV: 25,0%/.test(html), html);
+t('não mostra mais valor em R$ no CMV', !/CMV: R\$/.test(html), html);
 
 console.log('\n── 2. Produto sem ficha não finge custo — mostra "—"\n');
 t('Água (sem ficha) mostra CMV —', /Água[\s\S]*?CMV: —/.test(html), html);
@@ -68,9 +69,10 @@ t('o CMV entra na coluna do nome, não na dos números',
   /class="linN">[\s\S]*?class="cmv"/.test(html));
 
 console.log('\n── 4. Sem produto_id, liga pelo nome (dado antigo)\n');
+/* 2 × 4,8939 = 9,7878; faturamento 40 → 24,47% → 24,5% */
 const semId = blocoMaisVendidos([{ itens: [{ nome: 'Copo M', qtd: 2, total: 40 }] }]);
-t('Copo M sem produto_id ainda calcula CMV (2 × 4,8939 = 9,79)',
-  /CMV: R\$ 9,79/.test(semId), semId);
+t('Copo M sem produto_id ainda calcula CMV (24,5%)',
+  /CMV: 24,5%/.test(semId), semId);
 
 console.log('\n════════════════════════════════════════════════════');
 console.log(falhas ? `${falhas} de ${testes} FALHARAM` : `${testes} de ${testes} testes passaram`);

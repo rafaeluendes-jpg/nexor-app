@@ -438,8 +438,9 @@ function textoComparacao(){
    Cada produto vem da nuvem com `custo` = custo por unidade de venda da
    ficha tecnica (o MESMO calculo do relatorio de CMV do sistema: cada
    ingrediente convertido para a unidade do insumo x o custo do insumo,
-   somado e dividido pelas unidades de venda). O CMV do periodo e esse
-   custo x a quantidade vendida — e acompanha o mesmo filtro do ranking,
+   somado e dividido pelas unidades de venda). O CMV aparece em PERCENTUAL
+   (ordem do Rafael, 04/09/2026): custo x quantidade vendida dividido pelo
+   faturamento do produto no periodo. Acompanha o mesmo filtro do ranking,
    porque soma sobre os pedidos ja filtrados.
 
    O item liga no produto pelo `produto_id`; quando ele falta (dado
@@ -481,7 +482,9 @@ function blocoMaisVendidos(peds){
      return '<div class="lin"><div class="pos">'+(k+1)+'</div>'+
       '<div class="linN"><b>'+E(x.nome)+'</b>'+
        '<div class="barra"><i style="width:'+(x.qtd/max*100)+'%"></i></div>'+
-       '<small class="cmv">CMV: '+(x.temCusto?'R$ '+money(x.cmv):'—')+'</small></div>'+
+       '<small class="cmv">CMV: '+((x.temCusto&&x.valor>0)
+          ?(x.cmv/x.valor*100).toFixed(1).replace('.',',')+'%'
+          :'—')+'</small></div>'+
       '<div class="linV"><b>'+x.qtd+'</b><small>R$ '+money(x.valor)+'</small></div></div>';
    }).join('')+'</div>';
 }

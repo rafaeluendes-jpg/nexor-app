@@ -20,7 +20,7 @@
    o celular sem sinal no meio da loja — devolve a ultima copia, para o
    franqueado ao menos ver os numeros que ja tinha carregado.
    ========================================================== */
-const CACHE = 'joia-gestao-v11';
+const CACHE = 'joia-gestao-v12';
 
 /* assume o controle assim que instala, sem esperar a aba fechar */
 self.addEventListener('install', e => self.skipWaiting());
