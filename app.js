@@ -432,17 +432,46 @@ function textoComparacao(){
     '30':'30 dias antes'}[S.periodo]||'antes';
 }
 /* mais vendidos */
+/* ==========================================================
+   CMV POR PRODUTO NOS MAIS VENDIDOS — 04/09/2026
+
+   Cada produto vem da nuvem com `custo` = custo por unidade de venda da
+   ficha tecnica (o MESMO calculo do relatorio de CMV do sistema: cada
+   ingrediente convertido para a unidade do insumo x o custo do insumo,
+   somado e dividido pelas unidades de venda). O CMV do periodo e esse
+   custo x a quantidade vendida — e acompanha o mesmo filtro do ranking,
+   porque soma sobre os pedidos ja filtrados.
+
+   O item liga no produto pelo `produto_id`; quando ele falta (dado
+   antigo), cai no nome. Produto sem ficha nao tem custo: mostra "—" em
+   vez de fingir R$ 0,00. */
 function blocoMaisVendidos(peds){
+  var custoById={},custoByNome={};
+  (D.produtos||[]).forEach(function(p){
+    if(!p.ficha_id)return;                 /* sem ficha = sem custo conhecido */
+    var c=Number(p.custo)||0;
+    if(p.id)custoById[p.id]=c;
+    if(p.nome)custoByNome[String(p.nome).toLowerCase()]=c;
+  });
+  function custoDoItem(i){
+    if(i.produto_id!=null&&custoById[i.produto_id]!=null)return custoById[i.produto_id];
+    var k=String(i.nome||'').toLowerCase();
+    return custoByNome[k]!=null?custoByNome[k]:null;
+  }
   var por={};
   peds.forEach(function(p){
     (p.itens||[]).forEach(function(i){
       var n=i.nome||'—';
-      por[n]=por[n]||{qtd:0,valor:0};
-      por[n].qtd+=Number(i.qtd)||0;
+      por[n]=por[n]||{qtd:0,valor:0,cmv:0,temCusto:false};
+      var q=Number(i.qtd)||0;
+      por[n].qtd+=q;
       por[n].valor+=Number(i.total)||0;
+      var c=custoDoItem(i);
+      if(c!=null){ por[n].cmv+=c*q; por[n].temCusto=true; }
     });
   });
-  var lista=Object.keys(por).map(function(n){return {nome:n,qtd:por[n].qtd,valor:por[n].valor}})
+  var lista=Object.keys(por).map(function(n){return {nome:n,qtd:por[n].qtd,valor:por[n].valor,
+      cmv:por[n].cmv,temCusto:por[n].temCusto}})
     .sort(function(a,b){return b.qtd-a.qtd}).slice(0,5);
   if(!lista.length)return '';
   var max=lista[0].qtd||1;
@@ -451,7 +480,8 @@ function blocoMaisVendidos(peds){
    lista.map(function(x,k){
      return '<div class="lin"><div class="pos">'+(k+1)+'</div>'+
       '<div class="linN"><b>'+E(x.nome)+'</b>'+
-       '<div class="barra"><i style="width:'+(x.qtd/max*100)+'%"></i></div></div>'+
+       '<div class="barra"><i style="width:'+(x.qtd/max*100)+'%"></i></div>'+
+       '<small class="cmv">CMV: '+(x.temCusto?'R$ '+money(x.cmv):'—')+'</small></div>'+
       '<div class="linV"><b>'+x.qtd+'</b><small>R$ '+money(x.valor)+'</small></div></div>';
    }).join('')+'</div>';
 }
